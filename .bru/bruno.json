@@ -1,5 +1,15 @@
 {
   "version": "1",
   "name": "edumind",
-  "type": "collection"
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "size": 0.0000400543212890625,
+  "filesCount": 1,
+  "presets": {
+    "requestType": "http",
+    "requestUrl": "{{host}}"
+  }
 }
