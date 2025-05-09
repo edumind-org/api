@@ -24,3 +24,9 @@ assert {
 script:post-response {
   bru.setEnvVar('user_token',req.body.accessToken)
 }
+
+tests {
+  test('should throw error if invalid credentials', function () {
+    expect(res.getStatus()).to.equal(400)
+  })
+}
