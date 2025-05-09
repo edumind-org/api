@@ -1,0 +1,26 @@
+meta {
+  name: Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "identifier": "john.doe",
+    "password": "azerty1234"
+  }
+}
+
+assert {
+  req.status: eq 200
+}
+
+script:post-response {
+  bru.setEnvVar('user_token',req.body.accessToken)
+}

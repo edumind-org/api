@@ -1,0 +1,22 @@
+meta {
+  name: Logout
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{host}}/auth/logout
+  body: none
+  auth: inherit
+}
+
+body:json {
+  {
+    "identifier": "john.doe",
+    "password": "azerty1234"
+  }
+}
+
+assert {
+  req.status: eq 200
+}
