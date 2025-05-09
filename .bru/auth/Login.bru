@@ -12,21 +12,19 @@ post {
 
 body:json {
   {
-    "identifier": "john.doe",
-    "password": "azerty1234"
+    "identifier": "maxime.biaggi",
+    "password": "test1234"
   }
 }
 
 assert {
-  req.status: eq 200
+  res.status: eq 200
+  res.body.type: eq bearer
+  res.body: isJson
+  res.body.token: isDefined
+  res.body.token: isString
 }
 
 script:post-response {
-  bru.setEnvVar('user_token',req.body.accessToken)
-}
-
-tests {
-  test('should throw error if invalid credentials', function () {
-    expect(res.getStatus()).to.equal(400)
-  })
+  bru.setEnvVar('user_token',res.body.token)
 }
