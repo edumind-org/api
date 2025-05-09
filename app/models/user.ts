@@ -42,22 +42,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
   })
   declare roles: ManyToMany<typeof Role>
 
-  /**
-   * Check if the user has a specific role
-   * @param slug The role slug
-   * @returns boolean
-   */
-  hasRole(slug: string): boolean {
-    return this.roles.some((role) => role.slug === slug)
-  }
-
-  /**
-   * Check if the user has a specific permission
-   * @param slug The permission slug
-   * @returns boolean
-   */
-  hasPermission(slug: string): boolean {
-    return this.roles.some((role) => role.permissions.some((permission) => permission.slug === slug))
+  static async hasPermission(user: User, slug: string): Promise<boolean> {
+    const permission = await user.related('roles').query().whereHas('permissions', (query) => {
+      query.where('slug', slug)
+    })
+    return permission.length > 0
   }
 
   static accessTokens = DbAccessTokensProvider.forModel(User)
