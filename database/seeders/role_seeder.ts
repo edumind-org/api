@@ -1,4 +1,5 @@
 import Role from '#models/role'
+import logger from '@adonisjs/core/services/logger'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class extends BaseSeeder {
@@ -10,5 +11,6 @@ export default class extends BaseSeeder {
       { name: 'Teacher', slug: 'teacher', description: 'The teacher role can perform actions related to teaching.' },
       { name: 'Parent', slug: 'parent', description: 'The parent role can perform actions related to their children.' },
     ])
+    logger.info("The basic roles were created!")
   }
 }
