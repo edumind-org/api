@@ -1,38 +1,69 @@
+import Role from '#models/role'
+import User from '#models/user'
+import { CreateUserValidator } from '#validators/create_user'
+import { UpdateUserValidator } from '#validators/update_user'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class UsersController {
-  /**
-   * Display a list of resource
-   */
-  async index({}: HttpContext) {}
+  async index({ response }: HttpContext) {
+    const users = await User.all()
+    return response.ok(users)
+  }
 
-  /**
-   * Display form to create a new record
-   */
-  async create({}: HttpContext) {}
+  async store({ request, response }: HttpContext) {
+    const payload = await request.validateUsing(CreateUserValidator)
+    const role = await Role.query().where('slug', payload.role).first()
 
-  /**
-   * Handle form submission for the create action
-   */
-  async store({ request }: HttpContext) {}
+    if (!role) {
+      return response.badRequest({ message: 'Role not found' })
+    }
 
-  /**
-   * Show individual record
-   */
-  async show({ params }: HttpContext) {}
+    const user = await User.create({
+      email: payload.email,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      identifier: payload.identifier,
+      password: payload.password,
+    })
 
-  /**
-   * Edit individual record
-   */
-  async edit({ params }: HttpContext) {}
+    await user.related('roles').attach([role.id])
 
-  /**
-   * Handle form submission for the edit action
-   */
-  async update({ params, request }: HttpContext) {}
+    return response.created(user)
+  }
 
-  /**
-   * Delete record
-   */
-  async destroy({ params }: HttpContext) {}
+  async show({ params, response }: HttpContext) {
+    const user = await User.find(params.id)
+
+    if (!user) {
+      return response.notFound({ message: 'User not found' })
+    }
+
+    return response.ok(user)
+  }
+
+  async update({ params, request, response }: HttpContext) {
+    const payload = await request.validateUsing(UpdateUserValidator)
+    const user = await User.find(params.id)
+
+    if (!user) {
+      return response.notFound({ message: 'User not found' })
+    }
+    
+    user.merge(payload)
+    await user.save()
+
+    return response.ok(user)
+  }
+
+  async destroy({ params, response }: HttpContext) {
+    const user = await User.find(params.id)
+
+    if (!user) {
+      return response.notFound({ message: 'User not found' })
+    }
+    
+    await user.delete()
+
+    return response.ok({ message: 'User deleted successfully' })
+  }
 }
